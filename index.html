@@ -158,6 +158,7 @@ body {
   min-width: 0;
   overflow-wrap: anywhere;
   text-transform: uppercase;
+  line-height: 1.15;
 }
 @media (max-width: 320px) {
   .logo-area { position: static; justify-content: center; margin-bottom: 4px; }
@@ -249,87 +250,202 @@ body {
 }
 .rest-name small { display: block; font-size: .5em; letter-spacing: .25em; opacity: .85; }
 
+[hidden] { display: none !important; }
 .rank.semi { background: #15803d; color: #fff; }
 .rank.elim { background: #29a9e0; color: #000; }
 .rank.out  { background: #e11d48; color: #fff; }
-
-.leyenda {
-  margin-top: 12px;
-  color: #fff;
-  font-weight: bold;
-  font-size: clamp(10px, 2.4vw, 16px);
-}
+.leyenda { margin-top: 12px; color: #fff; font-weight: bold; font-size: clamp(10px, 2.4vw, 16px); }
 .leyenda div { display: flex; align-items: center; gap: 8px; margin-top: 6px; }
 .dot { width: 12px; height: 12px; border-radius: 2px; flex: none; }
 .dot.semi { background: #15803d; }
 .dot.elim { background: #29a9e0; }
 .dot.out  { background: #e11d48; }
+.main-title { margin: 0 0 clamp(10px, 2.5vw, 20px); text-align: center; color: #fff; font-family: "Bebas Neue", Impact, sans-serif; font-weight: 400; font-size: clamp(30px, 8vw, 64px); letter-spacing: .08em; line-height: 1; text-shadow: 2px 3px 6px rgba(0,0,0,.35); }
+.tabs { display: flex; gap: 6px; margin-bottom: clamp(10px, 2.5vw, 20px); }
+.tab { flex: 1; padding: 10px 6px; border: 0; border-bottom: 4px solid transparent; cursor: pointer; background: #1a1a1a; color: #fff; font-family: "Bebas Neue", Impact, sans-serif; font-size: clamp(14px, 3.4vw, 24px); letter-spacing: .1em; }
+.tab.activa { background: #fff; color: #000; border-bottom-color: #ff2323; }
+.fase-title { margin: clamp(16px, 4vw, 30px) 0 2px; text-align: center; font-family: var(--cond); font-size: clamp(26px, 7vw, 52px); letter-spacing: .06em; line-height: 1; }
+.fase-sub { text-align: center; opacity: .85; font-weight: bold; font-size: clamp(9px, 2vw, 14px); letter-spacing: .1em; margin-bottom: 6px; }
+.interr { font-family: var(--cond); font-size: clamp(24px, 6vw, 44px); color: #aaa; }
+.campeon { margin-top: clamp(16px, 4vw, 30px); text-align: center; font-family: var(--cond); font-size: clamp(22px, 6vw, 44px); letter-spacing: .06em; }
+.campeon .logo { margin: 8px auto; }
+
+.bracket-wrap { overflow-x: auto; }
+.bracket { position: relative; width: 100%; min-width: 300px; max-width: 560px; margin: 6px auto 0; aspect-ratio: 360 / 272; }
+.blines { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+.blines path { stroke: #fff; stroke-opacity: .75; stroke-width: 2; fill: none; vector-effect: non-scaling-stroke; }
+.bcol-title { position: absolute; top: 0; width: 30%; height: 8.1%; display: flex; align-items: center; justify-content: center; font-family: var(--cond); letter-spacing: .08em; font-size: clamp(11px, 3.2vw, 20px); text-align: center; }
+.bcard { position: absolute; width: 30%; height: 23.53%; display: flex; flex-direction: column; background: #fff; color: #222; border-left: 3px solid #ff2323; overflow: hidden; }
+.fila { flex: 1; min-height: 0; display: flex; align-items: center; gap: 3px; padding: 0 4px 0 3px; border-bottom: 1px solid rgba(0,0,0,.12); }
+.fila:last-child { border-bottom: 0; }
+.flogo { align-self: stretch; width: clamp(16px, 5vw, 34px); padding: 2px 0; display: flex; align-items: center; justify-content: center; flex: none; }
+.flogo img { width: 100%; height: 100%; object-fit: contain; display: block; }
+.flogo .interr { font-size: clamp(12px, 3.4vw, 18px); color: #999; }
+.fnombre { flex: 1; min-width: 0; font-family: var(--cond); font-size: clamp(10px, 3vw, 15px); line-height: 1.05; text-transform: uppercase; overflow-wrap: anywhere; }
+.fscore { font-family: var(--cond); font-size: clamp(12px, 3.4vw, 18px); text-align: right; white-space: nowrap; flex: none; }
+.fscore small { font-size: .7em; }
+.fila.gana { background: rgba(255,35,35,.14); }
+.fila.gana .fscore { color: #b00000; }
+.fila.pierde { opacity: .5; }
+.fila.pierde .fnombre { text-decoration: line-through; }
+.bnota { margin: 12px auto 0; max-width: 560px; text-align: center; font-weight: bold; font-size: clamp(9px, 2vw, 13px); opacity: .85; }
+.fx-title.chico { font-size: clamp(34px, 9vw, 72px); }
+#sec-proxima-elim { margin-top: clamp(18px, 4vw, 34px); }
 </style>
 </head>
 <body>
 <div class="container">
-  <div class="header">
-    <div class="logo-area">
-      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19,5h-2V3H7v2H5C3.9,5,3,5.9,3,7v1c0,2.55,1.92,4.63,4.39,4.94c0.63,1.5,1.98,2.63,3.61,2.96V19H7v2h10v-2h-4v-3.1 c1.63-0.33,2.98-1.46,3.61-2.96C19.08,12.63,21,10.55,21,8V7C21,5.9,20.1,5,19,5z M5,8V7h2v3.82C5.84,10.4,5,9.3,5,8z M12,14 c-1.65,0-3-1.35-3-3V5h6v6C15,12.65,13.65,14,12,14z M19,8c0,1.3-0.84,2.4-2,2.82V7h2V8z"/></svg>
-      <span>COPA<br>INTERNA<br>PILE 2026</span>
-    </div>
-    <h1 id="titulo-tabla">FECHA 4</h1>
+  <h1 class="main-title">COPA INTERNA PILE 2026</h1>
+
+  <div class="tabs">
+    <button type="button" class="tab activa" data-panel="regular">FASE REGULAR</button>
+    <button type="button" class="tab" data-panel="eliminatoria">FASE ELIMINATORIA</button>
   </div>
 
-  <div class="table-header">
-<div></div><div>EQUIPOS</div><div>PJ</div><div>GF</div><div>GC</div><div>GD</div><div>PTS</div>  </div>
+  <!-- FASE REGULAR: tabla + próximos partidos regulares -->
+  <section class="panel" id="panel-regular">
+    <div class="header"><h1 id="titulo-tabla">FECHA 4</h1></div>
+    <div class="table-header">
+      <div>#</div><div>EQUIPOS</div><div>PJ</div><div>GF</div><div>GC</div><div>GD</div><div>PTS</div>
+    </div>
+    <div id="tabla"></div>
+    <div class="leyenda">
+      <div><span class="dot semi"></span>Semifinales</div>
+      <div><span class="dot elim"></span>Playoffs</div>
+      <div><span class="dot out"></span>Eliminados</div>
+    </div>
 
-  <div id="tabla"></div>
-<div class="leyenda">
-  <div><span class="dot semi"></span>Semifinales</div>
-  <div><span class="dot elim"></span>Playoffs</div>
-  <div><span class="dot out"></span>Eliminados</div>
-</div>
-  <section class="fixture">
-    <div class="fx-top">PRÓXIMOS<br>ENCUENTROS</div>
-    <div class="fx-title" id="titulo-proxima">FECHA 5</div>
-    <div id="proxima"></div>
+    <section class="fixture" id="sec-proxima" hidden>
+      <div class="fx-top">COPA INTERNA<br>PILE 2026</div>
+      <div class="fx-title" id="titulo-proxima"></div>
+      <div id="proxima"></div>
+    </section>
+  </section>
+
+  <!-- FASE ELIMINATORIA: cuadro + próximos partidos eliminatorios -->
+  <section class="panel fixture" id="panel-eliminatoria" hidden>
+    <div id="llaves"></div>
+    <section id="sec-proxima-elim" hidden>
+      <div class="fx-title chico">PRÓXIMOS PARTIDOS</div>
+      <div id="proxima-elim"></div>
+    </section>
   </section>
 </div>
 
 <script>
 /* =====================================================================
-   1. CONFIGURACIÓN  (aquí es lo único que normalmente hay que editar)
+   1. CONFIGURACIÓN  (aquí se actualiza el campeonato)
+   Siglas internas de los equipos (la página nunca las muestra):
+   TON, CER, UPI, MTD, INT, LUNV, UPP, ULT, TIT
    ===================================================================== */
 
-// Número de fecha que se muestra en cada título
-var FECHA_TABLA = 4;      // título de la tabla:  "FECHA 4"
-var FECHA_PROXIMA = 5;    // título de los partidos:  "FECHA 5"
-
-// TABLA DE POSICIONES
-// Cada línea: [equipo, PJ, GF, GC, GD, PNTS]
-// El orden de las líneas es el orden de la tabla (la primera sale como 1º).
-// El nombre y la GD van entre comillas; los demás números, sin comillas.
+/* ---------------------------------------------------------------------
+   1.1  CLASIFICACIÓN REGULAR  (manual)
+   Cada línea: [sigla, PJ, GF, GC, GD, PNTS]
+   - El ORDEN de las líneas es el orden de la tabla (la 1ª es el 1º lugar).
+   - La sigla va entre comillas, igual que la GD ("+5", "-2").
+   - La fase regular termina SOLA cuando todos los equipos llegan a 8 PJ.
+   --------------------------------------------------------------------- */
+var TITULO_TABLA = "FECHA 4";
 var equipos = [
-  ["Todo o Nada", 4, 17, 7, "+10", 12],
-  ["Cerveceros FC", 3, 13, 8, "+5", 7],
-  ["Unidos x el Indor", 3, 8, 3, "+5", 7],
-  ["Mañana Te Doy", 4, 18, 17, "+1", 6],
-  ["Los Intocables", 3, 11, 10, "+1", 6],
-  ["La Última y Nos Vamos", 4, 11, 13, "-2", 4],
-  ["Unidos x un Propósito", 4, 5, 16, "-11", 3],
-  ["Los Últimos FC", 3, 7, 10, "-3", 1],
-  ["Titanes del Indor", 4, 3, 11, "-8", 0]
+  ["TON", 4, 17, 7, "+10", 12],
+  ["CER", 3, 13, 8, "+5", 7],
+  ["UPI", 3, 8, 3, "+5", 7],
+  ["MTD", 4, 18, 17, "+1", 6],
+  ["INT", 3, 11, 10, "+1", 6],
+  ["LUNV", 4, 11, 13, "-2", 4],
+  ["UPP", 4, 5, 16, "-11", 3],
+  ["ULT", 3, 7, 10, "-3", 1],
+  ["TIT", 4, 3, 11, "-8", 0]
 ];
 
-// PRÓXIMOS PARTIDOS
-// Cada línea: [hora, local, visitante]  (se usan las siglas de abajo)
+/* ---------------------------------------------------------------------
+   1.2  PROGRAMACIÓN REGULAR  (manual)
+   Se muestra solo mientras la fase regular siga activa y haya partidos.
+   Cada línea: [hora, local, visitante]
+   Para ocultarla, deja la lista vacía:  var partidos = [];
+   --------------------------------------------------------------------- */
+var TITULO_PROXIMA = "FECHA 5";
 var partidos = [
   ["6:45 PM", "LUNV", "INT"],
   ["7:35 PM", "ULT", "UPI"],
   ["8:25 PM", "MTD", "TIT"],
   ["9:15 PM", "TON", "CER"]
 ];
+var descansa = "UPP";      // sigla del equipo que descansa, o "" si ninguno
 
-// Equipo que descansa (una sigla)
-var descansa = "UPP";
+/* ---------------------------------------------------------------------
+   1.3  PLAYOFFS Y RESULTADOS
+   Los equipos salen SOLOS de la tabla cuando termina la fase regular:
+     PO1: 2º vs 7º     PO2: 3º vs 6º     PO3: 4º vs 5º
+   Tú solo anotas los goles: [goles del primero, goles del segundo].
+   Entre comillas. Con penales:  "1 (4)"  y  "1 (3)".
+   Deja "" mientras no se juegue.
+   --------------------------------------------------------------------- */
+var playoffResultados = [
+  ["", ""],   // PO1: 2º vs 7º
+  ["", ""],   // PO2: 3º vs 6º
+  ["", ""]    // PO3: 4º vs 5º
+];
 
-// SIGLAS Y NOMBRES (el nombre es el que aparece en las tarjetas de partidos)
+/* ---------------------------------------------------------------------
+   1.4  SEMIFINALES  (sorteo manual)
+   Después del sorteo, elige los 4 participantes. Cada línea:
+     [equipo A, equipo B, goles A, goles B]
+   En "equipo" puedes escribir:
+     "1º"            → el primer lugar de la fase regular
+     "G1" "G2" "G3"  → el ganador del playoff 1, 2 o 3
+     o una sigla     → por ejemplo "TON"
+   Deja "" mientras no se haga el sorteo (se muestra "Por sorteo").
+   Ejemplo tras el sorteo:  ["1º", "G2", "", ""]  y  ["G1", "G3", "", ""]
+   --------------------------------------------------------------------- */
+var semifinales = [
+  ["", "", "", ""],   // SF1
+  ["", "", "", ""]    // SF2
+];
+
+/* ---------------------------------------------------------------------
+   1.5  PARTIDO POR EL TERCER PUESTO
+   Los equipos salen SOLOS: perdedor de la SF1 vs perdedor de la SF2.
+   Solo anota los goles: [goles perdedor SF1, goles perdedor SF2]
+   --------------------------------------------------------------------- */
+var tercerPuesto = ["", ""];
+
+/* ---------------------------------------------------------------------
+   1.6  GRAN FINAL
+   Los equipos salen SOLOS: ganador de la SF1 vs ganador de la SF2.
+   Solo anota los goles: [goles ganador SF1, goles ganador SF2]
+   El CAMPEÓN sale solo del resultado de la final (nombre y escudo).
+   --------------------------------------------------------------------- */
+var granFinal = ["", ""];
+
+/* ---------------------------------------------------------------------
+   1.7  PROGRAMACIÓN ELIMINATORIA  (manual)
+   Un partido aparece en "Próximos partidos" solo si ya tiene sus dos
+   equipos definidos, tiene horario y todavía no tiene resultado.
+   Cada línea: [partido, "horario"]
+   Partidos: "PO1" "PO2" "PO3" "SF1" "SF2" "TP" (tercer puesto) "FINAL"
+   Ejemplo:  ["PO1", "SÁB 6:45 PM"],
+   --------------------------------------------------------------------- */
+var programacionEliminatoria = [
+];
+
+/* ---------------------------------------------------------------------
+   1.8  OPCIONAL: fijar los cruces del playoff a mano
+   Normalmente NO se toca. Los cruces se generan una sola vez al terminar
+   la fase regular y se guardan en el navegador. Como cada dispositivo
+   guarda lo suyo, si algún día la tabla se corrige después de terminada
+   la fase regular, escribe aquí los cruces correctos para que todos los
+   dispositivos muestren lo mismo.
+   Ejemplo:  primero: "TON",
+             cruces: [["CER","ULT"], ["UPI","LUNV"], ["MTD","INT"]]
+   --------------------------------------------------------------------- */
+var playoffManual = { primero: "", cruces: [] };
+
+/* ---------------------------------------------------------------------
+   1.9  NOMBRES  (sigla → nombre)
+   --------------------------------------------------------------------- */
+// Nombre en las tarjetas de partidos y en el cuadro eliminatorio
 var nombres = {
   TON: "Todo o Nada",
   MTD: "Mañana Te Doy",
@@ -341,15 +457,21 @@ var nombres = {
   TIT: "Titanes del Indor",
   INT: "Los Intocables"
 };
+// Nombre en la tabla de posiciones
+var nombresTabla = {
+  TON: "Todo o Nada",
+  MTD: "Mañana Te Doy",
+  UPI: "Unidos x el Indor",
+  LUNV: "La Última y Nos Vamos",
+  CER: "Cerveceros FC",
+  ULT: "Los Últimos FC",
+  UPP: "Unidos x un Propósito",
+  TIT: "Titanes del Indor",
+  INT: "Los Intocables"
+};
 
 /* =====================================================================
-   2. ESCUDOS
-   Cada sigla tiene su imagen. Hoy están incrustadas en el archivo
-   (las líneas largas que empiezan con "data:image"), así que la página
-   funciona sola, sin más archivos.
-   Para cambiar un escudo, reemplaza todo el texto entre comillas por la
-   ruta de una imagen que subas junto a index.html, por ejemplo:
-       TON: "escudos/todo-o-nada.png",
+   2. ESCUDOS  (imágenes incrustadas; no hace falta tocarlos)
    ===================================================================== */
 var logos = {
   TON: "data:image/jpeg;base64,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",
@@ -364,44 +486,191 @@ var logos = {
 };
 
 /* =====================================================================
-   3. CÓDIGO QUE DIBUJA LA PÁGINA  (no hace falta tocarlo)
+   3. LÓGICA  (no hace falta tocarla)
    ===================================================================== */
 
-// Títulos
-document.getElementById("titulo-tabla").textContent = "FECHA " + FECHA_TABLA;
-document.getElementById("titulo-proxima").textContent = "FECHA " + FECHA_PROXIMA;
+// ---- 3.1 Fase regular: ¿terminó? (todos con 8 PJ o más) ----
+var PJ_REQUERIDOS = equipos.length - 1;          // 9 equipos, una vuelta → 8
+var regularTerminada = equipos.every(function (e) { return e[1] >= PJ_REQUERIDOS; });
 
-// Tabla de posiciones
+// ---- 3.2 Cruces del playoff: se generan una vez y se conservan ----
+var CLAVE_CRUCES = "pile2026_cruces_v1";
+function crucesValidos(c) {
+  return !!(c && nombres[c.primero] && c.po && c.po.length === 3 && c.po.every(function (p) {
+    return p && nombres[p[0]] && nombres[p[1]];
+  }));
+}
+function obtenerCruces() {
+  if (!regularTerminada) {                       // aún no son definitivos
+    try { localStorage.removeItem(CLAVE_CRUCES); } catch (e) {}
+    return null;
+  }
+  var man = { primero: playoffManual.primero || equipos[0][0], po: playoffManual.cruces };
+  if (playoffManual.cruces.length === 3 && crucesValidos(man)) return man;
+  try {
+    var g = JSON.parse(localStorage.getItem(CLAVE_CRUCES) || "null");
+    if (crucesValidos(g)) return g;
+  } catch (e) {}
+  var q = equipos.map(function (e) { return e[0]; });
+  var nuevo = { primero: q[0], po: [[q[1], q[6]], [q[2], q[5]], [q[3], q[4]]] };
+  try { localStorage.setItem(CLAVE_CRUCES, JSON.stringify(nuevo)); } catch (e) {}
+  return nuevo;
+}
+var cruces = obtenerCruces();
+
+// ---- 3.3 Resultados: ganador / perdedor (con penales) ----
+function numeros(t) {
+  var m = String(t).match(/^\s*(\d+)\s*(?:\(\s*(\d+)\s*\))?\s*$/);
+  return m ? [parseInt(m[1], 10), m[2] ? parseInt(m[2], 10) : null] : null;
+}
+function resultadoDe(ga, gb) {
+  var a = numeros(ga), b = numeros(gb), g = -1;
+  if (!a || !b) return { jugado: false, ganador: -1 };
+  if (a[0] !== b[0]) g = a[0] > b[0] ? 0 : 1;
+  else if (a[1] !== null && b[1] !== null && a[1] !== b[1]) g = a[1] > b[1] ? 0 : 1;
+  return { jugado: true, ganador: g };
+}
+// A y B son { s: sigla o null, e: texto mientras no esté definido }
+function partido(id, A, B, ga, gb) {
+  return { id: id, A: A, B: B, ga: ga, gb: gb, res: resultadoDe(ga, gb) };
+}
+function ganador(m) { return m.res.ganador === 0 ? m.A.s : m.res.ganador === 1 ? m.B.s : null; }
+function perdedor(m) { return m.res.ganador === 0 ? m.B.s : m.res.ganador === 1 ? m.A.s : null; }
+
+// ---- 3.4 Construcción de los partidos eliminatorios ----
+var ETQ_PO = [["2º lugar", "7º lugar"], ["3º lugar", "6º lugar"], ["4º lugar", "5º lugar"]];
+var PO = [0, 1, 2].map(function (i) {
+  var par = cruces ? cruces.po[i] : [null, null];
+  return partido("PO" + (i + 1),
+    { s: par[0], e: ETQ_PO[i][0] }, { s: par[1], e: ETQ_PO[i][1] },
+    playoffResultados[i][0], playoffResultados[i][1]);
+});
+
+function resolver(t) {
+  t = String(t).replace(/^\s+|\s+$/g, "");
+  if (t === "") return { s: null, e: "Por sorteo" };
+  if (/^1[º°]?$/.test(t)) return { s: cruces ? cruces.primero : null, e: "1º lugar" };
+  var m = t.match(/^G([1-3])$/i);
+  if (m) return { s: ganador(PO[parseInt(m[1], 10) - 1]), e: "Ganador playoff " + m[1] };
+  if (nombres[t]) return { s: t, e: nombres[t] };
+  if (window.console) console.warn("Semifinales: valor no reconocido:", t);
+  return { s: null, e: t };
+}
+var SF = [0, 1].map(function (j) {
+  var c = semifinales[j];
+  return partido("SF" + (j + 1), resolver(c[0]), resolver(c[1]), c[2], c[3]);
+});
+(function () {                                   // aviso si se repite un equipo
+  var v = [SF[0].A.s, SF[0].B.s, SF[1].A.s, SF[1].B.s].filter(Boolean);
+  if (v.length !== new Set(v).size && window.console) console.warn("Semifinales: hay un equipo repetido.");
+})();
+
+var TP = partido("TP",
+  { s: perdedor(SF[0]), e: "Perdedor SF 1" }, { s: perdedor(SF[1]), e: "Perdedor SF 2" },
+  tercerPuesto[0], tercerPuesto[1]);
+var FN = partido("FINAL",
+  { s: ganador(SF[0]), e: "Ganador SF 1" }, { s: ganador(SF[1]), e: "Ganador SF 2" },
+  granFinal[0], granFinal[1]);
+var campeon = ganador(FN);
+
+// ---- 3.5 Dibujo ----
+function escudo(c) {
+  return '<div class="logo"><img src="' + logos[c] + '" alt="' + nombres[c] + '"></div>';
+}
+function tarjetaPartido(etiqueta, sa, sb) {
+  return '<div class="match"><div class="match-time">' + etiqueta + '</div>' +
+    '<div class="match-row">' + escudo(sa) +
+    '<div class="tname">' + nombres[sa] + '</div><div class="vs">VS</div>' +
+    '<div class="tname">' + nombres[sb] + '</div>' + escudo(sb) + '</div></div>';
+}
+
+// Títulos y tabla
+document.getElementById("titulo-tabla").textContent = TITULO_TABLA;
+document.getElementById("titulo-proxima").textContent = TITULO_PROXIMA;
 var html = "";
 equipos.forEach(function (e, i) {
   html += '<div class="row"><div class="rank ' + (i === 0 ? 'semi' : i < 7 ? 'elim' : 'out') + '">' + (i + 1) + '</div>' +
-    '<div class="team-col"><div class="white-slant"></div><span class="team-name">' + e[0] + '</span></div>' +
+    '<div class="team-col"><div class="white-slant"></div><span class="team-name">' + nombresTabla[e[0]] + '</span></div>' +
     '<div>' + e[1] + '</div><div>' + e[2] + '</div><div>' + e[3] + '</div><div>' + e[4] + '</div><div>' + e[5] + '</div></div>';
 });
 document.getElementById("tabla").innerHTML = html;
 
-// Próximos partidos
-function escudo(c) {
-  return '<div class="logo"><img src="' + logos[c] + '" alt="' + nombres[c] + '"></div>';
-}
+// Próximos partidos de la fase regular
+var verRegular = !regularTerminada && partidos.length > 0;
 var h2 = "";
-partidos.forEach(function (p) {
-  h2 += '<div class="match"><div class="match-time">' + p[0] + '</div>' +
-    '<div class="match-row">' + escudo(p[1]) +
-    '<div class="tname">' + nombres[p[1]] + '</div><div class="vs">VS</div>' +
-    '<div class="tname">' + nombres[p[2]] + '</div>' + escudo(p[2]) + '</div></div>';
+if (verRegular) {
+  partidos.forEach(function (p) { h2 += tarjetaPartido(p[0], p[1], p[2]); });
+  var chev = '<svg viewBox="0 0 120 40" aria-hidden="true">';
+  for (var i = 0; i < 4; i++) {
+    var x = i * 26;
+    chev += '<polygon fill="#ff2323" points="' + x + ',0 ' + (x + 14) + ',0 ' + (x + 30) + ',20 ' + (x + 14) + ',40 ' + x + ',40 ' + (x + 16) + ',20"/>';
+  }
+  chev += '</svg>';
+  if (descansa) {
+    h2 += '<div class="rest">' + chev + escudo(descansa) +
+      '<div class="rest-name"><small>Descansa</small>' + nombres[descansa] + '</div></div>';
+  }
+}
+document.getElementById("proxima").innerHTML = h2;
+document.getElementById("sec-proxima").hidden = !verRegular;
+
+// Próximos partidos de la fase eliminatoria
+var POR_ID = { PO1: PO[0], PO2: PO[1], PO3: PO[2], SF1: SF[0], SF2: SF[1], TP: TP, FINAL: FN };
+var RONDA = { PO1: "PLAYOFF", PO2: "PLAYOFF", PO3: "PLAYOFF", SF1: "SEMIFINAL 1", SF2: "SEMIFINAL 2", TP: "TERCER PUESTO", FINAL: "GRAN FINAL" };
+var h4 = "";
+programacionEliminatoria.forEach(function (p) {
+  var m = POR_ID[p[0]];
+  if (!m) { if (window.console) console.warn("Programación eliminatoria: partido desconocido:", p[0]); return; }
+  if (p[1] && m.A.s && m.B.s && !m.res.jugado) h4 += tarjetaPartido(p[1] + " · " + RONDA[p[0]], m.A.s, m.B.s);
+});
+document.getElementById("proxima-elim").innerHTML = h4;
+document.getElementById("sec-proxima-elim").hidden = (h4 === "");
+
+// Pestañas
+document.querySelectorAll(".tab").forEach(function (b) {
+  b.addEventListener("click", function () {
+    document.querySelectorAll(".tab").forEach(function (t) { t.classList.remove("activa"); });
+    document.querySelectorAll(".panel").forEach(function (p) { p.hidden = true; });
+    b.classList.add("activa");
+    document.getElementById("panel-" + b.dataset.panel).hidden = false;
+  });
 });
 
-// Equipo que descansa (flechas + escudo + nombre)
-var chev = '<svg viewBox="0 0 120 40" aria-hidden="true">';
-for (var i = 0; i < 4; i++) {
-  var x = i * 26;
-  chev += '<polygon fill="#ff2323" points="' + x + ',0 ' + (x + 14) + ',0 ' + (x + 30) + ',20 ' + (x + 14) + ',40 ' + x + ',40 ' + (x + 16) + ',20"/>';
+// Cuadro eliminatorio
+var AN = 360, AL = 272;
+function estados(m) {
+  if (m.res.ganador === 0) return ["gana", "pierde"];
+  if (m.res.ganador === 1) return ["pierde", "gana"];
+  return ["", ""];
 }
-chev += '</svg>';
-h2 += '<div class="rest">' + chev + escudo(descansa) +
-  '<div class="rest-name"><small>Descansa</small>' + nombres[descansa] + '</div></div>';
-document.getElementById("proxima").innerHTML = h2;
+function fila(ref, score, estado) {
+  var logo = ref.s ? '<img src="' + logos[ref.s] + '" alt="">' : '<span class="interr">?</span>';
+  var nombre = ref.s ? nombres[ref.s] : ref.e;
+  var sc = String(score).replace(/\((\d+)\)/, '<small>($1)</small>');
+  return '<div class="fila ' + estado + '"><span class="flogo">' + logo + '</span>' +
+    '<span class="fnombre">' + nombre + '</span><span class="fscore">' + sc + '</span></div>';
+}
+function tarjeta(m, x, y) {
+  var e = estados(m);
+  return '<div class="bcard" style="left:' + (x / AN * 100) + '%;top:' + (y / AL * 100) + '%">' +
+    fila(m.A, m.ga, e[0]) + fila(m.B, m.gb, e[1]) + '</div>';
+}
+function titulo(texto, x, y) {
+  return '<div class="bcol-title" style="left:' + (x / AN * 100) + '%;top:' + (y / AL * 100) + '%">' + texto + '</div>';
+}
+var lineas = '<svg class="blines" viewBox="0 0 360 272" preserveAspectRatio="none" aria-hidden="true">' +
+  '<path d="M108 62H117M108 142H117M108 222H117M117 62V222M117 102H126M117 182H126"/>' +
+  '<path d="M234 102H243M234 182H243M243 102V182M243 142H252"/></svg>';
+
+var h3 = '<div class="bracket-wrap"><div class="bracket">' + lineas +
+  titulo("PLAYOFF", 0, 0) + titulo("SEMIFINALES", 126, 0) + titulo("GRAN FINAL", 252, 0) +
+  titulo("TERCER PUESTO", 252, 178) +
+  tarjeta(PO[0], 0, 30) + tarjeta(PO[1], 0, 110) + tarjeta(PO[2], 0, 190) +
+  tarjeta(SF[0], 126, 70) + tarjeta(SF[1], 126, 150) +
+  tarjeta(FN, 252, 110) + tarjeta(TP, 252, 202) + '</div></div>' +
+  '<p class="bnota">Los 3 ganadores del playoff y el 1º lugar se sortean para armar las semifinales.</p>';
+if (campeon) h3 += '<div class="campeon">CAMPEÓN' + escudo(campeon) + nombres[campeon] + '</div>';
+document.getElementById("llaves").innerHTML = h3;
 </script>
 </body>
 </html>
