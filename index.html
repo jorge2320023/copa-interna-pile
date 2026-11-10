@@ -254,12 +254,14 @@ body {
 .rank.semi { background: #15803d; color: #fff; }
 .rank.elim { background: #29a9e0; color: #000; }
 .rank.out  { background: #e11d48; color: #fff; }
+.rank.pending { background: #f2c14e; color: #171717; }
 .leyenda { margin-top: 12px; color: #fff; font-weight: bold; font-size: clamp(10px, 2.4vw, 16px); }
 .leyenda div { display: flex; align-items: center; gap: 8px; margin-top: 6px; }
 .dot { width: 12px; height: 12px; border-radius: 2px; flex: none; }
 .dot.semi { background: #15803d; }
 .dot.elim { background: #29a9e0; }
 .dot.out  { background: #e11d48; }
+.dot.pending { background: #f2c14e; }
 .main-title { margin: 0 0 clamp(10px, 2.5vw, 20px); text-align: center; color: #fff; font-family: "Bebas Neue", Impact, sans-serif; font-weight: 400; font-size: clamp(30px, 8vw, 64px); letter-spacing: .08em; line-height: 1; text-shadow: 2px 3px 6px rgba(0,0,0,.35); }
 .tabs { display: flex; gap: 6px; margin-bottom: clamp(10px, 2.5vw, 20px); }
 .tab { flex: 1; padding: 10px 6px; border: 0; border-bottom: 4px solid transparent; cursor: pointer; background: #1a1a1a; color: #fff; font-family: "Bebas Neue", Impact, sans-serif; font-size: clamp(14px, 3.4vw, 24px); letter-spacing: .1em; }
@@ -291,11 +293,13 @@ body {
 .bnota { margin: 12px auto 0; max-width: 560px; text-align: center; font-weight: bold; font-size: clamp(9px, 2vw, 13px); opacity: .85; }
 .fx-title.chico { font-size: clamp(34px, 9vw, 72px); }
 #sec-proxima-elim { margin-top: clamp(18px, 4vw, 34px); }
+.avisos { margin-bottom: 12px; padding: 8px 10px; background: #fff; color: #8b0000; border-left: 4px solid #ff2323; font-weight: bold; font-size: clamp(10px, 2.4vw, 14px); line-height: 1.4; }
 </style>
 </head>
 <body>
 <div class="container">
   <h1 class="main-title">COPA INTERNA PILE 2026</h1>
+  <div class="avisos" id="avisos" hidden></div>
 
   <div class="tabs">
     <button type="button" class="tab activa" data-panel="regular">FASE REGULAR</button>
@@ -311,13 +315,14 @@ body {
     <div id="tabla"></div>
     <div class="leyenda">
       <div><span class="dot semi"></span>Semifinales</div>
-      <div><span class="dot elim"></span>Playoffs</div>
+      <div><span class="dot elim"></span>Playoff</div>
       <div><span class="dot out"></span>Eliminados</div>
+      <div><span class="dot pending"></span>Pendiente de desempate</div>
     </div>
 
     <section class="fixture" id="sec-proxima" hidden>
-      <div class="fx-top">PRÓXIMOS<br>PARTIDOS</div>
-      <div class="fx-title" id="titulo-proxima">PROXIMOS<br>PARTIDOS</div>
+      <div class="fx-top">PRÓXIMOS<br>ENCUENTROS</div>
+      <div class="fx-title" id="titulo-proxima"></div>
       <div id="proxima"></div>
     </section>
   </section>
@@ -326,7 +331,7 @@ body {
   <section class="panel fixture" id="panel-eliminatoria" hidden>
     <div id="llaves"></div>
     <section id="sec-proxima-elim" hidden>
-      <div class="fx-title chico">PRÓXIMOS PARTIDOS</div>
+      <div class="fx-title chico">PRÓXIMOS ENCUENTROS</div>
       <div id="proxima-elim"></div>
     </section>
   </section>
@@ -340,39 +345,150 @@ body {
    ===================================================================== */
 
 /* ---------------------------------------------------------------------
-   1.1  CLASIFICACIÓN REGULAR  (manual)
-   Cada línea: [sigla, PJ, GF, GC, GD, PNTS]
-   - El ORDEN de las líneas es el orden de la tabla (la 1ª es el 1º lugar).
-   - La sigla va entre comillas, igual que la GD ("+5", "-2").
-   - La fase regular termina SOLA cuando todos los equipos llegan a 8 PJ.
+   1.1  RESULTADOS DE LA FASE REGULAR  (lo único que se escribe aquí)
+   La tabla (PJ, GF, GC, GD, PTS) y el ORDEN se calculan SOLOS.
+   Cada línea: [fecha, local, goles local, goles visitante, visitante]
+   - Siglas entre comillas, goles como números, y coma al final de cada línea.
+   - Para una fecha nueva, agrega sus líneas AL FINAL de la lista.
+   - La fase regular termina sola cuando todos llegan a 8 PJ.
+   - Orden: puntos, diferencia de gol, goles a favor, enfrentamiento directo
+     y, si aún hay empate, lo indicado en "desempateManual" (más abajo).
+   - Las fechas 2 y 3 fueron reconstruidas a partir de las tablas publicadas.
    --------------------------------------------------------------------- */
-var TITULO_TABLA = "FECHA 4";
-var equipos = [
-  ["TON", 4, 17, 7, "+10", 12],
-  ["CER", 3, 13, 8, "+5", 7],
-  ["UPI", 3, 8, 3, "+5", 7],
-  ["INT", 3, 14, 10, "+4", 6],
-  ["MTD", 4, 19, 19, "0", 6],
-  ["LUNV", 4, 11, 13, "-2", 4],
-  ["UPP", 4, 5, 16, "-11", 3],
-  ["ULT", 3, 7, 10, "-3", 1],
-  ["TIT", 4, 3, 11, "-8", 0]
+var resultados = [
+  // FECHA 1
+  [1, "LUNV", 3, 6, "TON"],
+  [1, "TIT", 2, 6, "CER"],
+  [1, "MTD", 3, 7, "UPI"],
+  [1, "UPP", 0, 8, "INT"],
+  // FECHA 2
+  [2, "ULT", 3, 5, "LUNV"],
+  [2, "INT", 3, 9, "MTD"],
+  [2, "TON", 3, 1, "UPP"],
+  [2, "UPI", 1, 0, "TIT"],
+  // FECHA 3
+  [3, "MTD", 5, 3, "UPP"],
+  [3, "ULT", 1, 2, "TON"],
+  [3, "TIT", 1, 3, "INT"],
+  [3, "LUNV", 3, 4, "CER"],
+  // FECHA 4
+  [4, "TON", 6, 2, "MTD"],
+  [4, "UPI", 0, 0, "LUNV"],
+  [4, "CER", 3, 3, "ULT"],
+  [4, "UPP", 1, 0, "TIT"]
 ];
 
+/* 1.1b  OPCIONES (normalmente vacías) */
+// Título de la tabla. Vacío = automático ("FECHA 4", y "TABLA FINAL" al terminar).
+var TITULO_TABLA = "";
+// Puntos de más o de menos por sanción. Ejemplo:  { UPP: -1 }
+var ajustesPuntos = {};
+// Si un empate continúa después de PTS, DG, GF y enfrentamiento directo,
+// revisa primero Fair Play. Si continúa, realiza un sorteo.
+// Escribe AQUÍ todas las siglas del grupo empatado, en el orden definitivo.
+// Mientras falte alguna, la página no asignará posiciones ni generará cruces.
+// Ejemplo: ["UPI", "CER"]
+var desempateManual = [];
+
 /* ---------------------------------------------------------------------
-   1.2  PROGRAMACIÓN REGULAR  (manual)
-   Se muestra solo mientras la fase regular siga activa y haya partidos. 
-   Cada línea: [hora, local, visitante]
-   Para ocultarla, deja la lista vacía:  var partidos = [];
+   1.2  FIXTURE COMPLETO DE LA FASE REGULAR
+   Cada fecha contiene cuatro partidos y un equipo libre.
+   La página identifica automáticamente la primera fecha con partidos
+   pendientes y muestra únicamente los encuentros que aún no tienen resultado.
+   Formato: { fecha, partidos: [[hora, local, visitante], ...], descansa }
    --------------------------------------------------------------------- */
-var TITULO_PROXIMA = "FECHA 5";
-var partidos = [
-  ["6:45 PM", "LUNV", "INT"],
-  ["7:35 PM", "ULT", "UPI"],
-  ["8:25 PM", "MTD", "TIT"],
-  ["9:15 PM", "TON", "CER"]
+var fixtureRegular = [
+  {
+    fecha: 1,
+    partidos: [
+      ["18:45", "LUNV", "TON"],
+      ["19:35", "TIT", "CER"],
+      ["20:25", "MTD", "UPI"],
+      ["21:15", "UPP", "INT"]
+    ],
+    descansa: "ULT"
+  },
+  {
+    fecha: 2,
+    partidos: [
+      ["18:45", "ULT", "LUNV"],
+      ["19:35", "INT", "MTD"],
+      ["20:25", "TON", "UPP"],
+      ["21:15", "UPI", "TIT"]
+    ],
+    descansa: "CER"
+  },
+  {
+    fecha: 3,
+    partidos: [
+      ["18:45", "MTD", "UPP"],
+      ["19:35", "ULT", "TON"],
+      ["20:25", "TIT", "INT"],
+      ["21:15", "LUNV", "CER"]
+    ],
+    descansa: "UPI"
+  },
+  {
+    fecha: 4,
+    partidos: [
+      ["18:45", "TON", "MTD"],
+      ["19:35", "UPI", "LUNV"],
+      ["20:25", "CER", "ULT"],
+      ["21:15", "UPP", "TIT"]
+    ],
+    descansa: "INT"
+  },
+  {
+    fecha: 5,
+    partidos: [
+      ["18:45", "LUNV", "INT"],
+      ["19:35", "ULT", "UPI"],
+      ["20:25", "MTD", "TIT"],
+      ["21:15", "TON", "CER"]
+    ],
+    descansa: "UPP"
+  },
+  {
+    fecha: 6,
+    partidos: [
+      ["18:45", "UPI", "CER"],
+      ["19:35", "INT", "ULT"],
+      ["20:25", "TIT", "TON"],
+      ["21:15", "UPP", "LUNV"]
+    ],
+    descansa: "MTD"
+  },
+  {
+    fecha: 7,
+    partidos: [
+      ["18:45", "UPP", "ULT"],
+      ["19:35", "LUNV", "MTD"],
+      ["20:25", "TON", "UPI"],
+      ["21:15", "CER", "INT"]
+    ],
+    descansa: "TIT"
+  },
+  {
+    fecha: 8,
+    partidos: [
+      ["18:45", "INT", "UPI"],
+      ["19:35", "UPP", "CER"],
+      ["20:25", "MTD", "ULT"],
+      ["21:15", "TIT", "LUNV"]
+    ],
+    descansa: "TON"
+  },
+  {
+    fecha: 9,
+    partidos: [
+      ["18:45", "CER", "MTD"],
+      ["19:35", "TON", "INT"],
+      ["20:25", "UPI", "UPP"],
+      ["21:15", "ULT", "TIT"]
+    ],
+    descansa: "LUNV"
+  }
 ];
-var descansa = "UPP";      // sigla del equipo que descansa, o "" si ninguno
 
 /* ---------------------------------------------------------------------
    1.3  PLAYOFFS Y RESULTADOS
@@ -431,16 +547,19 @@ var programacionEliminatoria = [
 ];
 
 /* ---------------------------------------------------------------------
-   1.8  OPCIONAL: fijar los cruces del playoff a mano
-   Normalmente NO se toca. Los cruces se generan una sola vez al terminar
-   la fase regular y se guardan en el navegador. Como cada dispositivo
-   guarda lo suyo, si algún día la tabla se corrige después de terminada
-   la fase regular, escribe aquí los cruces correctos para que todos los
-   dispositivos muestren lo mismo.
-   Ejemplo:  primero: "TON",
-             cruces: [["CER","ULT"], ["UPI","LUNV"], ["MTD","INT"]]
+   1.8  CRUCES OFICIALES DEL PLAYOFF
+   Antes de confirmar la fase regular, deja confirmado en false.
+   Al terminar la liga, la página calculará los cruces provisionales.
+   Para fijarlos para TODOS los visitantes, copia los equipos calculados
+   en primero y cruces, cambia confirmado a true y publica el HTML en GitHub.
+   Una vez confirmado, el código conserva estos cruces aunque después se
+   corrija algún resultado de la tabla.
    --------------------------------------------------------------------- */
-var playoffManual = { primero: "", cruces: [] };
+var playoffOficiales = {
+  confirmado: false,
+  primero: "",
+  cruces: []
+};
 
 /* ---------------------------------------------------------------------
    1.9  NOMBRES  (sigla → nombre)
@@ -489,32 +608,152 @@ var logos = {
    3. LÓGICA  (no hace falta tocarla)
    ===================================================================== */
 
-// ---- 3.1 Fase regular: ¿terminó? (todos con 8 PJ o más) ----
-var PJ_REQUERIDOS = equipos.length - 1;          // 9 equipos, una vuelta → 8
-var regularTerminada = equipos.every(function (e) { return e[1] >= PJ_REQUERIDOS; });
+// ---- 3.1 Tabla de posiciones: se calcula sola desde los resultados ----
+var avisos = [];
+var stats = {};
+Object.keys(nombres).forEach(function (s) {
+  stats[s] = { sigla: s, pj: 0, gf: 0, gc: 0, gd: 0, pts: 0 };
+});
+var validos = [], parejas = {}, usados = {}, ultimaFecha = 0;
+function esEntero(x) { return typeof x === "number" && isFinite(x) && x >= 0 && Math.floor(x) === x; }
+resultados.forEach(function (r) {
+  var f = r[0], L = r[1], gl = r[2], gv = r[3], V = r[4];
+  var txt = "Fecha " + f + " (" + L + " " + gl + "-" + gv + " " + V + ")";
+  var par = [L, V].sort().join("-");
+  if (!stats[L] || !stats[V]) { avisos.push(txt + ": sigla desconocida."); return; }
+  if (L === V) { avisos.push(txt + ": un equipo no puede jugar contra sí mismo."); return; }
+  if (!esEntero(gl) || !esEntero(gv)) { avisos.push(txt + ": marcador inválido."); return; }
+  if (parejas[par]) { avisos.push(txt + ": ese partido ya está registrado."); return; }
+  if (usados[f + "|" + L] || usados[f + "|" + V]) { avisos.push(txt + ": un equipo aparece dos veces en la misma fecha."); return; }
+  parejas[par] = true; usados[f + "|" + L] = true; usados[f + "|" + V] = true;
+  validos.push(r);
+  if (f > ultimaFecha) ultimaFecha = f;
+  var a = stats[L], b = stats[V];
+  a.pj++; b.pj++; a.gf += gl; a.gc += gv; b.gf += gv; b.gc += gl;
+  if (gl > gv) a.pts += 3; else if (gl < gv) b.pts += 3; else { a.pts++; b.pts++; }
+});
+Object.keys(ajustesPuntos).forEach(function (s) {
+  if (stats[s]) stats[s].pts += ajustesPuntos[s];
+  else avisos.push("Ajuste de puntos: sigla desconocida (" + s + ").");
+});
+var lista = Object.keys(stats).map(function (s) { var t = stats[s]; t.gd = t.gf - t.gc; return t; });
 
-// ---- 3.2 Cruces del playoff: se generan una vez y se conservan ----
-var CLAVE_CRUCES = "pile2026_cruces_v1";
+// Desempate: enfrentamiento directo y, si persiste, resolución manual.
+// No se usa el orden alfabético como criterio deportivo.
+var empatesPendientes = [];
+function ordenManual(s) { return desempateManual.indexOf(s); }
+function desempatar(grupo) {
+  var mini = {};
+  grupo.forEach(function (g) {
+    mini[g.sigla] = { pts: 0, gf: 0, gc: 0, pj: 0 };
+  });
+  validos.forEach(function (r) {
+    var L = mini[r[1]], V = mini[r[4]];
+    if (!L || !V) return;
+    L.pj++; V.pj++;
+    L.gf += r[2]; L.gc += r[3]; V.gf += r[3]; V.gc += r[2];
+    if (r[2] > r[3]) L.pts += 3; else if (r[2] < r[3]) V.pts += 3; else { L.pts++; V.pts++; }
+  });
+
+  // Antes de aplicar Fair Play o sorteo, todos los equipos empatados
+  // deben haberse enfrentado entre sí en la fase regular.
+  var enfrentamientosCompletos = grupo.every(function (g) {
+    return mini[g.sigla].pj === grupo.length - 1;
+  });
+  if (!enfrentamientosCompletos) {
+    grupo.forEach(function (g) { g.empatePendiente = true; });
+    empatesPendientes.push({ tipo: "enfrentamientos", equipos: grupo.map(function (g) { return g.sigla; }) });
+    return grupo;
+  }
+
+  // Primero se compara la mini-tabla de los equipos empatados.
+  grupo.sort(function (a, b) {
+    var x = mini[a.sigla], y = mini[b.sigla];
+    return (y.pts - x.pts) || ((y.gf - y.gc) - (x.gf - x.gc)) || (y.gf - x.gf);
+  });
+
+  // Cada subgrupo que siga igual necesita un orden manual COMPLETO.
+  // Si falta algún equipo, todos quedan pendientes; nunca se ordenan por sigla.
+  var ordenados = [];
+  for (var i = 0; i < grupo.length; ) {
+    var j = i + 1;
+    var actual = mini[grupo[i].sigla];
+    while (j < grupo.length) {
+      var siguiente = mini[grupo[j].sigla];
+      if (actual.pts !== siguiente.pts ||
+          actual.gf - actual.gc !== siguiente.gf - siguiente.gc ||
+          actual.gf !== siguiente.gf) break;
+      j++;
+    }
+    var subgrupo = grupo.slice(i, j);
+    if (subgrupo.length > 1) {
+      var ordenManualCompleto = subgrupo.every(function (g) { return ordenManual(g.sigla) >= 0; });
+      if (ordenManualCompleto) {
+        subgrupo.sort(function (a, b) { return ordenManual(a.sigla) - ordenManual(b.sigla); });
+      } else {
+        subgrupo.forEach(function (g) { g.empatePendiente = true; });
+        empatesPendientes.push({ tipo: "manual", equipos: subgrupo.map(function (g) { return g.sigla; }) });
+      }
+    }
+    ordenados = ordenados.concat(subgrupo);
+    i = j;
+  }
+  return ordenados;
+}
+lista.sort(function (a, b) { return b.pts - a.pts || b.gd - a.gd || b.gf - a.gf; });
+var tabla = [];
+for (var i0 = 0; i0 < lista.length; ) {
+  var j0 = i0 + 1;
+  while (j0 < lista.length && lista[j0].pts === lista[i0].pts && lista[j0].gd === lista[i0].gd && lista[j0].gf === lista[i0].gf) j0++;
+  var grupo = lista.slice(i0, j0);
+  if (grupo.length > 1) grupo = desempatar(grupo);
+  tabla = tabla.concat(grupo);
+  i0 = j0;
+}
+
+// ---- Fase regular: ¿terminó? (todos con 8 PJ o más) ----
+var PJ_REQUERIDOS = Object.keys(nombres).length - 1;          // 9 equipos, una vuelta → 8
+// Una vez publicados los cruces oficiales, la fase regular queda cerrada
+// aunque más adelante se corrija algún marcador del historial.
+var regularTerminada = !!playoffOficiales.confirmado || tabla.every(function (t) { return t.pj >= PJ_REQUERIDOS; });
+var clasificacionResuelta = empatesPendientes.length === 0;
+empatesPendientes.forEach(function (e) {
+  var equiposEmpatados = e.equipos.map(function (s) { return nombresTabla[s] || s; }).join(", ");
+  if (e.tipo === "enfrentamientos") {
+    avisos.push("Empate provisional entre " + equiposEmpatados + ": faltan enfrentamientos directos entre los equipos empatados.");
+  } else {
+    avisos.push("Empate pendiente de resolución manual entre " + equiposEmpatados + ". Revisa Fair Play y, si continúa, realiza un sorteo. Después, introduce TODAS las siglas de este grupo en desempateManual, en el orden definitivo.");
+  }
+});
+var tituloTabla = TITULO_TABLA || (regularTerminada ? "TABLA FINAL" : ultimaFecha ? "FECHA " + ultimaFecha : "POSICIONES");
+
+// ---- 3.2 Cruces del playoff: se calculan o se leen del código oficial ----
 function crucesValidos(c) {
   return !!(c && nombres[c.primero] && c.po && c.po.length === 3 && c.po.every(function (p) {
-    return p && nombres[p[0]] && nombres[p[1]];
+    return p && nombres[p[0]] && nombres[p[1]] && p[0] !== p[1];
   }));
 }
 function obtenerCruces() {
-  if (!regularTerminada) {                       // aún no son definitivos
-    try { localStorage.removeItem(CLAVE_CRUCES); } catch (e) {}
+  // Si ya fueron confirmados y publicados en el código, son inmutables.
+  // Se leen incluso si después se modifica algún resultado de la tabla.
+  if (playoffOficiales.confirmado) {
+    var oficiales = { primero: playoffOficiales.primero, po: playoffOficiales.cruces };
+    if (crucesValidos(oficiales)) return oficiales;
+    avisos.push("Los cruces oficiales están marcados como confirmados, pero su configuración está incompleta o contiene siglas inválidas.");
     return null;
   }
-  var man = { primero: playoffManual.primero || equipos[0][0], po: playoffManual.cruces };
-  if (playoffManual.cruces.length === 3 && crucesValidos(man)) return man;
-  try {
-    var g = JSON.parse(localStorage.getItem(CLAVE_CRUCES) || "null");
-    if (crucesValidos(g)) return g;
-  } catch (e) {}
-  var q = equipos.map(function (e) { return e[0]; });
-  var nuevo = { primero: q[0], po: [[q[1], q[6]], [q[2], q[5]], [q[3], q[4]]] };
-  try { localStorage.setItem(CLAVE_CRUCES, JSON.stringify(nuevo)); } catch (e) {}
-  return nuevo;
+
+  // Mientras no estén confirmados, solo se calculan cuando la fase regular
+  // terminó y todos los desempates quedaron resueltos.
+  if (!regularTerminada || !clasificacionResuelta) return null;
+
+  // Antes de su confirmación, se calculan desde la tabla definitiva.
+  var q = tabla.map(function (t) { return t.sigla; });
+  if (q.length !== 9 || q.some(function (s) { return !nombres[s]; })) return null;
+  return {
+    primero: q[0],
+    po: [[q[1], q[6]], [q[2], q[5]], [q[3], q[4]]]
+  };
 }
 var cruces = obtenerCruces();
 
@@ -584,31 +823,55 @@ function tarjetaPartido(etiqueta, sa, sb) {
     '<div class="tname">' + nombres[sb] + '</div>' + escudo(sb) + '</div></div>';
 }
 
-// Títulos y tabla
-document.getElementById("titulo-tabla").textContent = TITULO_TABLA;
-document.getElementById("titulo-proxima").textContent = TITULO_PROXIMA;
+// Título, avisos y tabla
+document.getElementById("titulo-tabla").textContent = tituloTabla;
+var elAvisos = document.getElementById("avisos");
+elAvisos.innerHTML = avisos.length ? "⚠ Revisar los resultados:<br>" + avisos.join("<br>") : "";
+elAvisos.hidden = avisos.length === 0;
 var html = "";
-equipos.forEach(function (e, i) {
-  html += '<div class="row"><div class="rank ' + (i === 0 ? 'semi' : i < 7 ? 'elim' : 'out') + '">' + (i + 1) + '</div>' +
-    '<div class="team-col"><div class="white-slant"></div><span class="team-name">' + nombresTabla[e[0]] + '</span></div>' +
-    '<div>' + e[1] + '</div><div>' + e[2] + '</div><div>' + e[3] + '</div><div>' + e[4] + '</div><div>' + e[5] + '</div></div>';
+tabla.forEach(function (t, i) {
+  var gd = (t.gd > 0 ? "+" : "") + t.gd;
+  var claseRango = t.empatePendiente ? "pending" : (i === 0 ? "semi" : i < 7 ? "elim" : "out");
+  var textoRango = t.empatePendiente ? "?" : (i + 1);
+  var tituloRango = t.empatePendiente ? ' title="Posición pendiente de desempate"' : "";
+  html += '<div class="row"><div class="rank ' + claseRango + '"' + tituloRango + '>' + textoRango + '</div>' +
+    '<div class="team-col"><div class="white-slant"></div><span class="team-name">' + nombresTabla[t.sigla] + '</span></div>' +
+    '<div>' + t.pj + '</div><div>' + t.gf + '</div><div>' + t.gc + '</div><div>' + gd + '</div><div>' + t.pts + '</div></div>';
 });
 document.getElementById("tabla").innerHTML = html;
 
-// Próximos partidos de la fase regular
-var verRegular = !regularTerminada && partidos.length > 0;
+// Próxima fecha regular: se localiza automáticamente la primera con partidos pendientes.
+var jugados = {};
+validos.forEach(function (r) { jugados[[r[1], r[4]].sort().join("-")] = true; });
+var rondaProxima = null;
+var partidosPendientes = [];
+if (!regularTerminada) {
+  for (var ir = 0; ir < fixtureRegular.length; ir++) {
+    var ronda = fixtureRegular[ir];
+    var sinResultado = ronda.partidos.filter(function (p) {
+      return !jugados[[p[1], p[2]].sort().join("-")];
+    });
+    if (sinResultado.length) {
+      rondaProxima = ronda;
+      partidosPendientes = sinResultado;
+      break;
+    }
+  }
+}
+var verRegular = !!(rondaProxima && partidosPendientes.length);
 var h2 = "";
 if (verRegular) {
-  partidos.forEach(function (p) { h2 += tarjetaPartido(p[0], p[1], p[2]); });
+  document.getElementById("titulo-proxima").textContent = "FECHA " + rondaProxima.fecha;
+  partidosPendientes.forEach(function (p) { h2 += tarjetaPartido(p[0], p[1], p[2]); });
   var chev = '<svg viewBox="0 0 120 40" aria-hidden="true">';
-  for (var i = 0; i < 4; i++) {
-    var x = i * 26;
+  for (var ic = 0; ic < 4; ic++) {
+    var x = ic * 26;
     chev += '<polygon fill="#ff2323" points="' + x + ',0 ' + (x + 14) + ',0 ' + (x + 30) + ',20 ' + (x + 14) + ',40 ' + x + ',40 ' + (x + 16) + ',20"/>';
   }
   chev += '</svg>';
-  if (descansa) {
-    h2 += '<div class="rest">' + chev + escudo(descansa) +
-      '<div class="rest-name"><small>Descansa</small>' + nombres[descansa] + '</div></div>';
+  if (rondaProxima.descansa) {
+    h2 += '<div class="rest">' + chev + escudo(rondaProxima.descansa) +
+      '<div class="rest-name"><small>Descansa</small>' + nombres[rondaProxima.descansa] + '</div></div>';
   }
 }
 document.getElementById("proxima").innerHTML = h2;
@@ -669,6 +932,15 @@ var h3 = '<div class="bracket-wrap"><div class="bracket">' + lineas +
   tarjeta(SF[0], 126, 70) + tarjeta(SF[1], 126, 150) +
   tarjeta(FN, 252, 110) + tarjeta(TP, 252, 202) + '</div></div>' +
   '<p class="bnota">Los 3 ganadores del playoff y el 1º lugar se sortean para armar las semifinales.</p>';
+if (cruces && !playoffOficiales.confirmado) {
+  var codigoCruces = 'var playoffOficiales = {\n' +
+    '  confirmado: true,\n' +
+    '  primero: "' + cruces.primero + '",\n' +
+    '  cruces: [' + cruces.po.map(function (p) { return '["' + p[0] + '", "' + p[1] + '"]'; }).join(', ') + ']\n' +
+    '};';
+  h3 += '<p class="bnota">Cruces calculados desde la tabla. Para fijarlos para todos, reemplaza la configuración de "playoffOficiales" por este bloque y publica el HTML actualizado en GitHub Pages.</p>' +
+    '<pre class="bnota" style="white-space:pre-wrap;text-align:left;background:rgba(0,0,0,.28);padding:10px;border-radius:6px;overflow-wrap:anywhere">' + codigoCruces + '</pre>';
+}
 if (campeon) h3 += '<div class="campeon">CAMPEÓN' + escudo(campeon) + nombres[campeon] + '</div>';
 document.getElementById("llaves").innerHTML = h3;
 </script>
